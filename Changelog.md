@@ -1,4 +1,9 @@
+## 4.0.5
+* Remove accidental references to global `d3`, `dc` in sources (discussion [here](https://github.com/dc-js/dc.js/commit/902736ad4436dbcad1d57badce14a5e485c59d7a#commitcomment-40208686))
+
 ## 4.0.4
+* Fix ordinal (string) ordering ([#1690](https://github.com/dc-js/dc.js/issues/1690))
+* Bubble mixin should exclude zeros when calculating elastic radius; [excludeElasticZero](https://dc-js.github.io/dc.js/docs/html/BubbleMixin.html#excludeElasticZero) can be set false if old behavior is desired ([#1688](https://github.com/dc-js/dc.js/pull/1688))
 * Add a simple [linear regression example](http://dc-js.github.io/dc.js/examples/regression.html).
 * Add a [horizon chart example](http://dc-js.github.io/dc.js/examples/horizon-chart.html) which shows how to add a custom chart with group data. Rename the old custom chart example which displays a groupAll to [color swatch](http://dc-js.github.io/dc.js/examples/color-swatch.html).
 

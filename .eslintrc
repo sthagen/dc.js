@@ -8,22 +8,6 @@
     "ecmaVersion": 6,
     "sourceType": "module"
   },
-  "globals": {
-    "console": false,
-    "crossfilter": false,
-    "d3": false,
-    "dc": false,
-    "global": false,
-    "module": false,
-    "process": false,
-    "jasmine": false,
-    "expect": false,
-    "describe": false,
-    "it": false,
-    "beforeEach": false,
-    "afterEach": false,
-    "spyOn": false
-  },
   "extends": "eslint:recommended",
   "rules": {
     "no-useless-escape": "off",
@@ -61,5 +45,27 @@
     "prefer-template": "error",
     "template-curly-spacing": "error",
     "valid-jsdoc": ["error", {"requireParamDescription": false, "requireReturnDescription": false}]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["spec/**/*.js", "web-src/**/*.js"],
+      "globals": {
+        "crossfilter": false,
+        "d3": false,
+        "dc": false
+      }
+    },
+    {
+      "files": ["spec/**/*.js"],
+      "globals": {
+        "jasmine": false,
+        "expect": false,
+        "describe": false,
+        "it": false,
+        "beforeEach": false,
+        "afterEach": false,
+        "spyOn": false
+      }
+    }
+  ]
 }
