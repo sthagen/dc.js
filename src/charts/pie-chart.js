@@ -7,6 +7,7 @@ import {CapMixin} from '../base/cap-mixin';
 import {ColorMixin} from '../base/color-mixin';
 import {BaseMixin} from '../base/base-mixin';
 import {transition} from '../core/core';
+import {adaptHandler} from '../core/d3compat';
 
 const DEFAULT_MIN_ANGLE_FOR_LABEL = 0.5;
 
@@ -154,14 +155,19 @@ export class PieChart extends CapMixin(ColorMixin(BaseMixin)) {
         return slices
             .enter()
             .append('g')
-            .attr('class', (d, i) => `${this._sliceCssClass} _${i}`);
+            .attr('class', (d, i) => `${this._sliceCssClass} _${i}`)
+            .classed('dc-tabbable', this._keyboardAccessible);
     }
 
     _createSlicePath (slicesEnter, arcs) {
         const slicePath = slicesEnter.append('path')
             .attr('fill', (d, i) => this._fill(d, i))
-            .on('click', (d, i) => this._onClick(d, i))
+            .on('click', adaptHandler(d => this._onClick(d)))
             .attr('d', (d, i) => this._safeArc(d, i, arcs));
+
+        if (this._keyboardAccessible) {
+            this._makeKeyboardAccessible(this._onClick);
+        }
 
         const tranNodes = transition(slicePath, this.transitionDuration(), this.transitionDelay());
         if (tranNodes.attrTween) {
@@ -213,13 +219,13 @@ export class PieChart extends CapMixin(ColorMixin(BaseMixin)) {
                     }
                     return classes;
                 })
-                .on('click', (d, i) => this._onClick(d, i))
-                .on('mouseover', (d, i) => {
-                    this._highlightSlice(i, true);
-                })
-                .on('mouseout', (d, i) => {
-                    this._highlightSlice(i, false);
-                });
+                .on('click', adaptHandler(d => this._onClick(d)))
+                .on('mouseover', adaptHandler(d => {
+                    this._highlightSlice(d.index, true);
+                }))
+                .on('mouseout', adaptHandler(d => {
+                    this._highlightSlice(d.index, false);
+                }));
             this._positionLabels(labelsEnter, arcs);
             if (this._externalLabelRadius && this._drawPaths) {
                 this._updateLabelPaths(pieData, arcs);
@@ -237,13 +243,13 @@ export class PieChart extends CapMixin(ColorMixin(BaseMixin)) {
             .enter()
             .append('polyline')
             .attr('class', (d, i) => `pie-path _${i} ${this._sliceCssClass}`)
-            .on('click', (d, i) => this._onClick(d, i))
-            .on('mouseover', (d, i) => {
-                this._highlightSlice(i, true);
-            })
-            .on('mouseout', (d, i) => {
-                this._highlightSlice(i, false);
-            })
+            .on('click', adaptHandler(d => this._onClick(d)))
+            .on('mouseover', adaptHandler(d => {
+                this._highlightSlice(d.index, true);
+            }))
+            .on('mouseout', adaptHandler(d => {
+                this._highlightSlice(d.index, false);
+            }))
             .merge(polyline);
 
         const arc2 = arc()
@@ -451,9 +457,9 @@ export class PieChart extends CapMixin(ColorMixin(BaseMixin)) {
         return this.getColor(d.data, i);
     }
 
-    _onClick (d, i) {
+    _onClick (d) {
         if (this._g.attr('class') !== this._emptyCssClass) {
-            this.onClick(d.data, i);
+            this.onClick(d.data);
         }
     }
 

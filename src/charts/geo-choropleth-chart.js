@@ -7,6 +7,7 @@ import {transition} from '../core/core';
 import {logger} from '../core/logger';
 import {events} from '../core/events';
 import {utils} from '../core/utils';
+import {adaptHandler} from '../core/d3compat';
 
 /**
  * The geo choropleth chart is designed as an easy way to create a crossfilter driven choropleth map
@@ -62,6 +63,7 @@ export class GeoChoroplethChart extends ColorMixin(BaseMixin) {
 
             regionG
                 .append('path')
+                .classed('dc-tabbable', this._keyboardAccessible)
                 .attr('fill', 'white')
                 .attr('d', this._getGeoPath());
 
@@ -147,7 +149,11 @@ export class GeoChoroplethChart extends ColorMixin(BaseMixin) {
                 }
                 return 'none';
             })
-            .on('click', d => this.onClick(d, layerIndex));
+            .on('click', adaptHandler(d => this.onClick(d, layerIndex)));
+
+        if (this._keyboardAccessible) {
+            this._makeKeyboardAccessible(this.onClick, layerIndex);
+        }
 
         transition(paths, this.transitionDuration(),
                    this.transitionDelay()).attr('fill', (d, i) => this.getColor(data[this._geoJson(layerIndex).keyAccessor(d)], i));

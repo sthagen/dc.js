@@ -225,10 +225,10 @@ describe('dc.heatmap', () => {
 
         const reduceDimensionValues = function (dmsn) {
             return dmsn.top(Infinity).reduce((p, d) => {
-                p.cols.add(d.colData);
-                p.rows.add(d.rowData);
+                p.cols.add(+d.colData);
+                p.rows.add(+d.rowData);
                 return p;
-            }, {cols: d3.set(), rows: d3.set()});
+            }, {cols: new Set(), rows: new Set()});
         };
 
         beforeEach(() => {
@@ -602,6 +602,38 @@ describe('dc.heatmap', () => {
             });
             it('updates rect titles correctly', () => {
                 testRectTitlesBubble12(chart);
+            });
+        });
+    });
+
+    describe('accessibility heatmap', () => {
+
+        beforeEach(() => {
+            chart.keyboardAccessible(true);
+        })
+
+        it('internal elements are focusable by keyboard', () => {
+
+            chart.render();
+            chart.selectAll('rect.heat-box').each(function () {
+                const bar = d3.select(this);
+                expect(bar.attr('tabindex')).toEqual('0');
+            });
+        });
+
+        it('internal elements are clickable by pressing enter', () => {
+
+            const clickHandlerSpy = jasmine.createSpy();
+            chart.boxOnClick = clickHandlerSpy;
+            chart.render();
+          
+            const event = new Event('keydown');
+            event.keyCode = 13;
+                     
+            chart.selectAll('rect.heat-box').each(function (d) {
+                this.dispatchEvent(event);
+                expect(clickHandlerSpy).toHaveBeenCalledWith(d);
+                clickHandlerSpy.calls.reset();
             });
         });
     });

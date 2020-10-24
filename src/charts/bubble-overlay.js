@@ -5,6 +5,7 @@ import {BubbleMixin} from '../base/bubble-mixin';
 import {transition} from '../core/core';
 import {constants} from '../core/constants';
 import {utils} from '../core/utils';
+import {adaptHandler} from '../core/d3compat';
 
 const BUBBLE_OVERLAY_CLASS = 'bubble-overlay';
 const BUBBLE_NODE_CLASS = 'node';
@@ -53,6 +54,7 @@ export class BubbleOverlay extends BubbleMixin(BaseMixin) {
          */
         this._g = undefined;
         this._points = [];
+        this._keyboardAccessible = false;
 
         this.transitionDuration(750);
 
@@ -112,9 +114,14 @@ export class BubbleOverlay extends BubbleMixin(BaseMixin) {
             if (circle.empty()) {
                 circle = nodeG.append('circle')
                     .attr('class', BUBBLE_CLASS)
+                    .classed('dc-tabbable', this._keyboardAccessible)
                     .attr('r', 0)
                     .attr('fill', this.getColor)
-                    .on('click', d => this.onClick(d));
+                    .on('click', adaptHandler(d => this.onClick(d)));
+            }
+
+            if (this._keyboardAccessible) {
+                this._makeKeyboardAccessible(this.onClick);
             }
 
             transition(circle, this.transitionDuration(), this.transitionDelay())

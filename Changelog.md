@@ -1,3 +1,13 @@
+## 4.2.0
+* Accessibility features <a href="http://dc-js.github.io/dc.js/docs/html/BaseMixin.html#svgDescription">BaseMixin.svgDescription</a> and <a href="http://dc-js.github.io/dc.js/docs/html/BaseMixin.html#keyboardAccessible">BaseMixin.keyboardAccessible</a>, by German Priks. <a href="http://dc-js.github.io/dc.js/examples/filtering.html">Demo here</a>. ([#1738](https://github.com/dc-js/dc.js/pull/1738) / [#1185](https://github.com/dc-js/dc.js/issues/1185))
+
+## 4.1.1
+* The [brush ordinal example](https://dc-js.github.io/dc.js/examples/brush-ordinal.html) did not filter correctly when row chart was clicked ([#1770](https://github.com/dc-js/dc.js/issues/1770))
+* Some examples were broken by the move to d3@6 ([#1769](https://github.com/dc-js/dc.js/issues/1769))
+
+## 4.1.0
+* Compatible with dc@6 while preserving compatibility with dc@5, by Deepak Kumar ([#1749](https://github.com/dc-js/dc.js/pull/1749) / [#1748](https://github.com/dc-js/dc.js/issues/1748))
+
 ## 4.0.5
 * Remove accidental references to global `d3`, `dc` in sources (discussion [here](https://github.com/dc-js/dc.js/commit/902736ad4436dbcad1d57badce14a5e485c59d7a#commitcomment-40208686))
 
