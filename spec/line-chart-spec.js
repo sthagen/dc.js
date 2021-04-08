@@ -64,7 +64,7 @@ describe('dc.lineChart', () => {
             it('should change the radius on mousemove', () => {
                 chart.selectAll('circle.dot').each(function () {
                     const dot = d3.select(this);
-                    dot.on('mousemove').call(this);
+                    dc.d3compat.callHandler(dot.on('mousemove'), this, {});
                     expect(dot.attr('r')).toBe('5');
                 });
             });
@@ -72,8 +72,8 @@ describe('dc.lineChart', () => {
             it('should revert to original radius on mouseout', () => {
                 chart.selectAll('circle.dot').each(function () {
                     const dot = d3.select(this);
-                    dot.on('mousemove').call(this);
-                    dot.on('mouseout').call(this);
+                    dc.d3compat.callHandler(dot.on('mousemove'), this, {});
+                    dc.d3compat.callHandler(dot.on('mouseout'), this, {});
                     expect(dot.attr('r')).toBe('2');
                 });
             });
@@ -93,7 +93,7 @@ describe('dc.lineChart', () => {
                 it('should not change showing the data point on mousemove', () => {
                     chart.selectAll('circle.dot').each(function () {
                         const dot = d3.select(this);
-                        dot.on('mousemove').call(this);
+                        dc.d3compat.callHandler(dot.on('mousemove'), this, {});
                         expect(dot.style('fill-opacity')).toBeWithinDelta(0.8);
                         expect(dot.style('stroke-opacity')).toBeWithinDelta(0.8);
                     });
@@ -102,8 +102,8 @@ describe('dc.lineChart', () => {
                 it('should not change returning to extremely low opacity on hover out', () => {
                     chart.selectAll('circle.dot').each(function () {
                         const dot = d3.select(this);
-                        dot.on('mousemove').call(this);
-                        dot.on('mouseout').call(this);
+                        dc.d3compat.callHandler(dot.on('mousemove'), this, {});
+                        dc.d3compat.callHandler(dot.on('mouseout'), this, {});
                         expect(dot.style('fill-opacity')).toBeWithinDelta(1e-6);
                         expect(dot.style('stroke-opacity')).toBeWithinDelta(1e-6);
                     });
@@ -214,7 +214,7 @@ describe('dc.lineChart', () => {
             it('should become visible when hovered over', () => {
                 chart.selectAll('circle.dot').each(function () {
                     const dot = d3.select(this);
-                    dot.on('mousemove').call(this);
+                    dc.d3compat.callHandler(dot.on('mousemove'), this, {});
                     expect(dot.style('fill-opacity')).toBeWithinDelta(0.8);
                     expect(dot.style('stroke-opacity')).toBeWithinDelta(0.8);
                 });
@@ -223,8 +223,8 @@ describe('dc.lineChart', () => {
             it('should return to extremely low opacity on hover out', () => {
                 chart.selectAll('circle.dot').each(function () {
                     const dot = d3.select(this);
-                    dot.on('mousemove').call(this);
-                    dot.on('mouseout').call(this);
+                    dc.d3compat.callHandler(dot.on('mousemove'), this, {});
+                    dc.d3compat.callHandler(dot.on('mouseout'), this, {});
                     expect(dot.style('fill-opacity')).toBeWithinDelta(1e-6);
                     expect(dot.style('stroke-opacity')).toBeWithinDelta(1e-6);
                 });
@@ -252,7 +252,7 @@ describe('dc.lineChart', () => {
                         let x;
                         beforeEach(() => {
                             const dot = chart.select('circle.dot');
-                            dot.on('mousemove').call(dot.nodes()[0]);
+                            dc.d3compat.callHandler(dot.on('mousemove'), dot.nodes()[0], {});
                             x = dot.attr('cx');
                         });
 
@@ -268,7 +268,7 @@ describe('dc.lineChart', () => {
                             let x;
                             beforeEach(() => {
                                 const dot = chart.select('circle.dot');
-                                dot.on('mousemove').call(dot.nodes()[0]);
+                                dc.d3compat.callHandler(dot.on('mousemove'), dot.nodes()[0], {});
                                 x = dot.attr('cx');
                             });
 
@@ -284,7 +284,7 @@ describe('dc.lineChart', () => {
                             beforeEach(() => {
                                 chart.useRightYAxis(true).render();
                                 const dot = chart.select('circle.dot');
-                                dot.on('mousemove').call(dot.nodes()[0]);
+                                dc.d3compat.callHandler(dot.on('mousemove'), dot.nodes()[0], {});
                                 x = dot.attr('cx');
                             });
 
@@ -562,7 +562,7 @@ describe('dc.lineChart', () => {
                         return d3.select(chart.selectAll('g.axis.y .tick text').nodes()[n]);
                     };
 
-                    expect(nthText(0).text()).toBe('−20');
+                    expect(nthText(0).text()).toMatch(/[\-−]20/);
                     expect(nthText(1).text()).toBe('0');
                     expect(nthText(2).text()).toBe('20');
                 });
@@ -598,9 +598,10 @@ describe('dc.lineChart', () => {
                         return d3.select(chart.selectAll('g.axis.y .tick text').nodes()[n]);
                     };
 
-                    expect(nthText(0).text()).toBe('−30');
-                    expect(nthText(1).text()).toBe('−20');
-                    expect(nthText(2).text()).toBe('−10');
+                    // d3@5 and d3@6 uses different characters to format negative numbers
+                    expect(nthText(0).text()).toMatch(/[\-−]30/);
+                    expect(nthText(1).text()).toMatch(/[\-−]20/);
+                    expect(nthText(2).text()).toMatch(/[\-−]10/);
                     expect(nthText(3).text()).toBe('0');
                 });
             });
@@ -616,7 +617,7 @@ describe('dc.lineChart', () => {
                     .render();
 
                 firstItem = chart.select('g.dc-legend g.dc-legend-item');
-                firstItem.on('mouseover')(firstItem.datum());
+                dc.d3compat.callHandler(firstItem.on('mouseover'), {}, null, firstItem.datum());
             });
 
             describe('when a legend item is hovered over', () => {
@@ -633,13 +634,13 @@ describe('dc.lineChart', () => {
 
             describe('when a legend item is hovered out', () => {
                 it('should remove highlighting from corresponding lines and areas', () => {
-                    firstItem.on('mouseout')(firstItem.datum());
+                    dc.d3compat.callHandler(firstItem.on('mouseout'), null, {}, firstItem.datum());
                     expect(nthLine(0).classed('highlight')).toBeFalsy();
                     expect(nthArea(0).classed('highlight')).toBeFalsy();
                 });
 
                 it('should fade in non-corresponding lines and areas', () => {
-                    firstItem.on('mouseout')(firstItem.datum());
+                    dc.d3compat.callHandler(firstItem.on('mouseout'), null, {}, firstItem.datum());
                     expect(nthLine(1).classed('fadeout')).toBeFalsy();
                     expect(nthArea(1).classed('fadeout')).toBeFalsy();
                 });

@@ -160,8 +160,8 @@ describe('dc.BarChart', () => {
             });
 
             it('should generate the y-axis domain dynamically', () => {
-                expect(nthYAxisText(0).text()).toMatch(/−10/);
-                expect(nthYAxisText(1).text()).toMatch(/−5/);
+                expect(nthYAxisText(0).text()).toMatch(/[\-−]10/);
+                expect(nthYAxisText(1).text()).toMatch(/[\-−]5/);
                 expect(nthYAxisText(2).text()).toBe('0');
             });
 
@@ -271,7 +271,7 @@ describe('dc.BarChart', () => {
                     expect(dimension.top(Infinity).length).toEqual(10);
                     // fake a click
                     const abar = chart.selectAll('rect.bar:nth-child(3)');
-                    abar.on('click')(abar.datum());
+                    dc.d3compat.callHandler(abar.on('click'), null, {}, abar.datum());
                     expect(dimension.top(Infinity).length).toEqual(1);
                 });
             });
@@ -285,7 +285,7 @@ describe('dc.BarChart', () => {
                     expect(dimension.top(Infinity).length).toEqual(10);
                     // fake a click
                     const alabel = chart.select('text.barLabel');
-                    alabel.on('click')(alabel.datum());
+                    dc.d3compat.callHandler(alabel.on('click'), null, {}, alabel.datum());
                     expect(dimension.top(Infinity).length).toEqual(3);
                 });
             });
@@ -356,14 +356,14 @@ describe('dc.BarChart', () => {
                 beforeEach(() => {
                     chart.brushOn(false)
                         .on('renderlet', _chart => {
-                            _chart.selectAll('rect.bar').on('click', d => _chart.onClick(d));
+                            _chart.selectAll('rect.bar').on('click', dc.d3compat.eventHandler(d => _chart.onClick(d)));
                         })
                         .render();
                 });
                 it('clicking causes another dimension to be filtered', () => {
                     expect(dimension.top(Infinity).length).toEqual(10);
                     const abar = chart.selectAll('rect.bar:nth-child(3)');
-                    abar.on('click')(abar.datum());
+                    dc.d3compat.callHandler(abar.on('click'), null, {}, abar.datum());
                     expect(dimension.top(Infinity).length).toEqual(3);
                 });
             });
@@ -583,7 +583,7 @@ describe('dc.BarChart', () => {
                         return d3.select(chart.selectAll('g.axis.y .tick text').nodes()[n]);
                     };
 
-                    expect(nthText(0).text()).toBe('−20');
+                    expect(nthText(0).text()).toMatch(/[\-−]20/);
                     expect(nthText(1).text()).toBe('0');
                     expect(nthText(2).text()).toBe('20');
                 });
@@ -609,9 +609,10 @@ describe('dc.BarChart', () => {
                         return d3.select(chart.selectAll('g.axis.y .tick text').nodes()[n]);
                     };
 
-                    expect(nthText(0).text()).toBe('−30');
-                    expect(nthText(1).text()).toBe('−20');
-                    expect(nthText(2).text()).toBe('−10');
+                    // d3@5 and d3@6 uses different characters to format negative numbers
+                    expect(nthText(0).text()).toMatch(/[\-−]30/);
+                    expect(nthText(1).text()).toMatch(/[\-−]20/);
+                    expect(nthText(2).text()).toMatch(/[\-−]10/);
                     expect(nthText(3).text()).toBe('0');
                 });
             });
@@ -687,7 +688,7 @@ describe('dc.BarChart', () => {
                     .render();
 
                 firstItem = chart.select('g.dc-legend g.dc-legend-item');
-                firstItem.on('mouseover')(firstItem.datum());
+                dc.d3compat.callHandler(firstItem.on('mouseover'), null, {}, firstItem.datum());
             });
 
             describe('when a legend item is hovered over', () => {
@@ -706,14 +707,14 @@ describe('dc.BarChart', () => {
 
             describe('when a legend item is hovered out', () => {
                 it('should remove highlighting from corresponding lines and areas', () => {
-                    firstItem.on('mouseout')(firstItem.datum());
+                    dc.d3compat.callHandler(firstItem.on('mouseout'), null, {}, firstItem.datum());
                     nthStack(0).forEachBar(bar => {
                         expect(bar.classed('highlight')).toBeFalsy();
                     });
                 });
 
                 it('should fade in non-corresponding lines and areas', () => {
-                    firstItem.on('mouseout')(firstItem.datum());
+                    dc.d3compat.callHandler(firstItem.on('mouseout'), null, {}, firstItem.datum());
                     nthStack(1).forEachBar(bar => {
                         expect(bar.classed('fadeout')).toBeFalsy();
                     });
